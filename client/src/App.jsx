@@ -15,15 +15,27 @@ function App() {
   }, []);
 
 
-  function addWorkout() {
+  async function addWorkout() {
+    
     if (workoutName.trim() === ""){
       return;
     }
+
     const newWorkout = {
       name: workoutName,
       date: "aug 20, 2026"
     };
-    setWorkouts([...workouts, newWorkout]);
+
+    const response = await fetch("http://localhost:5000/api/workouts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newWorkout),
+    });
+
+    const createdWorkout = await response.json();
+    setWorkouts([...workouts, createdWorkout]);
     setWorkoutName("");
   }
 

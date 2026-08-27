@@ -27,6 +27,17 @@ app.get("/api/workouts", (req, res) => {
     res.json(workouts);
 })
 
+app.post("/api/workouts", (req, res) => {
+    const{name, date} = req.body;
+
+    const newWorkout = {
+        id: 3,
+        name: name,
+        date: date,
+    };
+    res.status(201).json(newWorkout);
+});
+
 const PORT = 5000;
 
 app.listen(PORT, () =>  {
