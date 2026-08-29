@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
-import { getWorkouts, createWorkout } from "./api/workoutApi";
+import { getWorkouts, createWorkout, deleteWorkout } from "./api/workoutApi";
 
 function App() {
 
@@ -13,6 +13,12 @@ function App() {
         setWorkouts(data);
     })
   }, []);
+
+  async function handleDelete(id) {
+    await deleteWorkout(id);
+
+    setWorkouts(workouts.filter((workout) => workout.id !== id));
+  }
 
 
   async function addWorkout() {
@@ -47,8 +53,10 @@ function App() {
       {workouts.map((workout) => (
         <WorkoutCard
           key={workout.id}
+          id={workout.id}
           name={workout.name}
           date={workout.date}
+          onDelete={handleDelete}
         />
       ))}
 

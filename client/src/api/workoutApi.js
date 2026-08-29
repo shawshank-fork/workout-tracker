@@ -23,3 +23,30 @@ export async function createWorkout(workout) {
     }
     return response.json();
 }
+
+export async function updateWorkout(id, workout) {
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(workout),
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to update workout");
+    }
+    return response.json();
+}
+
+export async function deleteWorkout(id) {
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+    });
+    
+    if(!response.ok) {
+        throw new Error("Failed to delete workout");
+    }
+
+    return response.json();
+}
