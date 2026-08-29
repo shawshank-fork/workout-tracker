@@ -1,5 +1,6 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import prisma from "./lib/prisma.js";
 
 const app = express();
 app.use(cors());
@@ -11,31 +12,49 @@ app.get("/", (req, res) => {
     });
 });
 
-app.get("/api/workouts", (req, res) => {
-    const workouts = [
-        {
-            id: 1,
-            name: "push day",
-            date: "2 aug 2026"
-        },
-        {
-            id: 2,
-            name: "pull day",
-            date: "22 aug 2026",
-        },
-    ];
-    res.json(workouts);
-})
+app.get("/api/workouts", async (req, res) => {
+    try {
+        const workouts = await prisma.workout.findMany();
+        res.json(workouts);
+    } catch (error) {
+        console.error(error);
 
-app.post("/api/workouts", (req, res) => {
-    const{name, date} = req.body;
+        res.status(500).json({
+            message: "failed to fetch workouts",
+        });
+    }
+});
 
-    const newWorkout = {
-        id: 3,
-        name: name,
-        date: date,
-    };
-    res.status(201).json(newWorkout);
+app.post("/api/workouts", async (req, res) => {
+    try {
+        const {name, date} = req.body;
+
+        const workout = await prisma.workout.create({
+            data: {
+                name: name,
+                date: new Date(date),
+            },
+        });
+        res.status(201).json(workout);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Failed to create workout",
+        });  
+    }
+});
+
+app.get("/api/test-db", async (req, res) => {
+    try {
+        const workouts = await prisma.workout.findMany();
+
+        res.json(workouts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Database connection failed",
+        });
+    }
 });
 
 const PORT = 5000;

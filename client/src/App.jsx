@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
+import { getWorkouts, createWorkout } from "./api/workoutApi";
 
 function App() {
 
@@ -7,10 +8,9 @@ function App() {
   const [workoutName, setWorkoutName] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/workouts")
-    .then((response) => response.json())
-    .then((data) => {
-      setWorkouts(data);
+    getWorkouts()
+      .then((data) =>{
+        setWorkouts(data);
     })
   }, []);
 
@@ -23,18 +23,11 @@ function App() {
 
     const newWorkout = {
       name: workoutName,
-      date: "aug 20, 2026"
+      date: "2026-08-27"
     };
 
-    const response = await fetch("http://localhost:5000/api/workouts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newWorkout),
-    });
+    const createdWorkout = await createWorkout(newWorkout);
 
-    const createdWorkout = await response.json();
     setWorkouts([...workouts, createdWorkout]);
     setWorkoutName("");
   }
