@@ -13,7 +13,7 @@ export async function createWorkout(workout) {
     const response = await fetch(API_URL, {
         method: "POST",
         headers: {
-            "Content Type" : "application/json",
+            "Content-Type" : "application/json",
         },
         body : JSON.stringify(workout),
     });
