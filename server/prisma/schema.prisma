@@ -16,6 +16,23 @@ model Workout {
   id          Int      @id @default(autoincrement())
   name        String
   date        DateTime
-  createdAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  exercises   Exercise[]
   
+}
+
+model Exercise {
+  id            Int     @id @default(autoincrement())
+  name          String
+  workoutId     Int
+  workout       Workout @relation(fields: [workoutId], references: [id])
+  sets          Set[]
+}
+
+model Set {
+  id            Int      @id @default(autoincrement())
+  weight        Float
+  reps          Int
+  exerciseId    Int
+  exercise      Exercise @relation(fields: [exerciseId], references: [id])
 }
