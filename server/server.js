@@ -89,6 +89,29 @@ app.delete("/api/workouts/:id", async (req, res) => {
     }
 });
 
+app.post("/api/workouts/:workoutId/exercises", async(req, res) => {
+    try {
+        const workoutId = Number(req.params.workoutId);
+        const { name } = req.body;
+
+        const exercise = await prisma.exercise.create ({
+            data: {
+                name: name,
+                workoutId: workoutId,
+            },
+        });
+
+        res.status(201).json(exercise);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to create exercise",
+        });
+    }
+    
+});
+
 app.get("/api/test-db", async (req, res) => {
     try {
         const workouts = await prisma.workout.findMany();
