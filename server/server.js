@@ -116,6 +116,26 @@ app.post("/api/workouts/:workoutId/exercises", async(req, res) => {
     
 });
 
+app.get("/api/workouts/:workoutId/exercises", async (req, res) => {
+    try {
+        const workoutId = Number(req.params.workoutId);
+
+        const exercises = await prisma.exercise.findMany({
+            where: {
+                workoutId: workoutId,
+            },
+        });
+
+        res.json(exercises);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: " Failed to fetch exercises",
+        });
+    }
+});
+
 app.get("/api/test-db", async (req, res) => {
     try {
         const workouts = await prisma.workout.findMany();

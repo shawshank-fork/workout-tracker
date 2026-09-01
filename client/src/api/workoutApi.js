@@ -50,3 +50,12 @@ export async function deleteWorkout(id) {
 
     return response.json();
 }
+
+export async function getExercises(workoutId) {
+    const response = await fetch(`${API_URL}/${workoutId}/exercises`);
+
+    if(!response.ok) {
+        throw new Error("Failed to fetch exercises");
+    }
+    return response.json();
+}
