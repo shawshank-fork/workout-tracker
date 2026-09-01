@@ -14,7 +14,11 @@ app.get("/", (req, res) => {
 
 app.get("/api/workouts", async (req, res) => {
     try {
-        const workouts = await prisma.workout.findMany();
+        const workouts = await prisma.workout.findMany({
+            include: {
+                exercises: true,
+            },
+        });
         res.json(workouts);
     } catch (error) {
         console.error(error);
