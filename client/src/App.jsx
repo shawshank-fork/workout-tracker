@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
-import { getWorkouts, createWorkout, deleteWorkout } from "./api/workoutApi";
+import { getWorkouts, createWorkout, deleteWorkout, getExercises } from "./api/workoutApi";
 
 function App() {
 
   const [workouts, setWorkouts] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
+
+  const [selectedWorkout, setSelectedWorkout] = useState(null); //selectedWorkout to find which workout os the user currently looking at
+  const [exercises, setExercises] = useState([]); // to find what exercises belong to the selected workout for view
 
   useEffect(() => {
     getWorkouts()
@@ -18,6 +21,14 @@ function App() {
     await deleteWorkout(id);
 
     setWorkouts(workouts.filter((workout) => workout.id !== id));
+  }
+
+  async function handleSelectWorkout(workout) {
+    setSelectedWorkout(workout);
+
+    const data = await getExercises(workout.id);
+
+    setExercises(data);
   }
 
 
@@ -57,8 +68,21 @@ function App() {
           name={workout.name}
           date={workout.date}
           onDelete={handleDelete}
+          onSelect={handleSelectWorkout}
         />
       ))}
+
+      {selectedWorkout && (
+        <div>
+          <h2>{selectedWorkout.name} Exercises</h2>
+
+          {exercises.map((exercise) => (
+            <p key={exercise.id}>
+              {exercise.name}
+            </p>
+          ))}
+        </div>
+      )}
 
       <button onClick={addWorkout}>Add workout</button> {/* we write addworkout because w want to call it when clicked, if we would have written addworkout() that would have called it while redering the comp */}
     </div>
