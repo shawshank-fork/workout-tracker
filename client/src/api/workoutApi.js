@@ -59,3 +59,19 @@ export async function getExercises(workoutId) {
     }
     return response.json();
 }
+
+export async function createExercise(workoutId, exercise) {
+    const response = await fetch(`${API_URL}/${workoutId}/exercises`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(exercise),
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to create exercise");
+    }
+
+    return response.json();
+}
