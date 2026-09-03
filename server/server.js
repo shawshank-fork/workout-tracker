@@ -136,6 +136,30 @@ app.get("/api/workouts/:workoutId/exercises", async (req, res) => {
     }
 });
 
+app.post("/api/exercises/:exerciseId/sets", async (req,res) => {
+    try {
+        const exerciseId = Number(req.params.exerciseId);
+        const { weight, reps} = req.body;
+
+        const set = await prisma.set.create({
+            data: {
+                weight: weight,
+                reps: reps,
+                exerciseId: exerciseId,
+            },
+        });
+
+        res.status(201).json(set);
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to create set",
+        });
+    }
+});
+
 app.get("/api/test-db", async (req, res) => {
     try {
         const workouts = await prisma.workout.findMany();
