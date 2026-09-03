@@ -75,3 +75,19 @@ export async function createExercise(workoutId, exercise) {
 
     return response.json();
 }
+
+export async function createSet(exerciseId, set) {
+    const response = await fetch(`http://localhost:5000/api/exercises/${exerciseId}/sets`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(set),
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to create Set");
+    }
+
+    return response.json()
+}
