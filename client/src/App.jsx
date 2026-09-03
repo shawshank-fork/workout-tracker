@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
-import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise } from "./api/workoutApi";
+import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet } from "./api/workoutApi";
 
 function App() {
 
@@ -10,6 +10,8 @@ function App() {
   const [selectedWorkout, setSelectedWorkout] = useState(null); //selectedWorkout to find which workout os the user currently looking at
   const [exercises, setExercises] = useState([]); // to find what exercises belong to the selected workout for view
   const [exerciseName, setExerciseName] = useState("");
+  const [weight, setWeight] = useState("");
+  const [reps, setReps] = useState("");
 
   useEffect(() => {
     getWorkouts()
@@ -46,8 +48,22 @@ function App() {
       newExercise
     );
 
-    setExercises([...exercises, createdExercise]);
+    setExercises((currrentExercises) => [
+      ...currrentExercises,
+      createdExercise
+    ]);
     setExerciseName("");
+  }
+
+  async function handleAddSet(exerciseId, weight, reps) {
+    const newSet = {
+      weight: Number(weight),
+      reps: Number(reps),
+    };
+
+    const createdSet = await createSet(exerciseId, newSet);
+
+    console.log(createdSet);
   }
 
 
@@ -86,7 +102,7 @@ function App() {
           id={workout.id}
           name={workout.name}
           date={workout.date}
-          onDelete={handleDelete}
+          onDelete={handleDelete} 
           onSelect={handleSelectWorkout}
         />
       ))}
@@ -107,9 +123,28 @@ function App() {
           </button>
 
           {exercises.map((exercise) => (
-            <p key={exercise.id}>
-              {exercise.name}
-            </p>
+            <div key={exercise.id}>
+              <h3>{exercise.name}</h3>
+
+              <input
+                type="number"
+                placeholder="weight"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+
+              />
+
+              <input
+                type="number"
+                placeholder="Reps"
+                value={reps}
+                onChange={(e) => setReps(e.target.value)}
+              />
+
+              <button onClick={() => handleAddSet(exercise.id, weight, reps)}>
+                Add Set
+              </button>
+            </div>
           ))}
         </div>
       )}
