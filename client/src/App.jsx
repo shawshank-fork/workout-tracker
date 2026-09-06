@@ -10,8 +10,8 @@ function App() {
   const [selectedWorkout, setSelectedWorkout] = useState(null); //selectedWorkout to find which workout os the user currently looking at
   const [exercises, setExercises] = useState([]); // to find what exercises belong to the selected workout for view
   const [exerciseName, setExerciseName] = useState("");
-  const [weight, setWeight] = useState("");
-  const [reps, setReps] = useState("");
+  const [weights, setWeights] = useState({}); //{} means we will be storing object now. Earlier: ""
+  const [reps, setReps] = useState({});
   const [sets, setSets] = useState([]);
 
   useEffect(() => {
@@ -74,6 +74,16 @@ function App() {
       ...currrentSets,
       createdSet
     ]);
+
+    setWeights((currentWeights) => ({
+      ...currentWeights,
+      [exerciseId]: ""
+    }));
+
+    setReps((currentReps) => ({
+      ...currentReps,
+      [exerciseId]: ""
+    }));
   }
 
 
@@ -139,19 +149,29 @@ function App() {
               <input
                 type="number"
                 placeholder="weight"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+                value={weights[exercise.id] || ""}
+                onChange={(e) => 
+                  setWeights({
+                    ...weights,
+                    [exercise.id]: e.target.value
+                  })
+                }
 
               />
 
               <input
                 type="number"
                 placeholder="Reps"
-                value={reps}
-                onChange={(e) => setReps(e.target.value)}
+                value={reps[exercise.id] || ""}
+                onChange={(e) =>
+                  setReps((currentReps) => ({
+                    ...currentReps,
+                    [exercise.id]: e.target.value
+                  }))
+                }
               />
 
-              <button onClick={() => handleAddSet(exercise.id, weight, reps)}>
+              <button onClick={() => handleAddSet(exercise.id, weights[exercise.id], reps[exercise.id])}>
                 Add Set
               </button>
 
