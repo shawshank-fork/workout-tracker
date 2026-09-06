@@ -160,6 +160,26 @@ app.post("/api/exercises/:exerciseId/sets", async (req,res) => {
     }
 });
 
+app.get("/api/exercises/:exerciseId/sets", async (req,res) => {
+    try {
+        const exerciseId = Number(req.params.exerciseId);
+
+        const sets = await prisma.set.findMany({
+            where: {
+                exerciseId: exerciseId,
+            },
+        });
+
+        res.json(sets);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to fetch sets",
+        });
+    }
+})
+
 app.get("/api/test-db", async (req, res) => {
     try {
         const workouts = await prisma.workout.findMany();

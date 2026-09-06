@@ -91,3 +91,13 @@ export async function createSet(exerciseId, set) {
 
     return response.json()
 }
+
+export async function getSets(exerciseId) {
+    const response = await fetch( `http://localhost:5000/api/exercises/${exerciseId}/sets`);
+
+    if(!response.ok) {
+        throw new Error("Failed to fetch sets");
+    }
+
+    return response.json();
+}

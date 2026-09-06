@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
-import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet } from "./api/workoutApi";
+import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet, getSets} from "./api/workoutApi";
 
 function App() {
 
@@ -12,6 +12,7 @@ function App() {
   const [exerciseName, setExerciseName] = useState("");
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+  const [sets, setSets] = useState([]);
 
   useEffect(() => {
     getWorkouts()
@@ -32,6 +33,12 @@ function App() {
     const data = await getExercises(workout.id);
 
     setExercises(data);
+
+    const allSets = await Promise.all(
+      data.map((exercise) => getSets(exercise.id))
+    );
+
+    setSets(allSets.flat());
   }
 
   async function handleAddExercise() {
@@ -63,7 +70,10 @@ function App() {
 
     const createdSet = await createSet(exerciseId, newSet);
 
-    console.log(createdSet);
+    setSets((currrentSets) => [
+      ...currrentSets,
+      createdSet
+    ]);
   }
 
 
@@ -144,6 +154,15 @@ function App() {
               <button onClick={() => handleAddSet(exercise.id, weight, reps)}>
                 Add Set
               </button>
+
+              {sets
+                .filter((set) => set.exerciseId === exercise.id)
+                .map((set) => (
+                  <p key={set.id}>
+                    {set.weight} kg x {set.reps} reps
+                  </p>
+                ))
+              }
             </div>
           ))}
         </div>
