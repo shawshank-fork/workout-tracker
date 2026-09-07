@@ -12,6 +12,7 @@ app.get("/", (req, res) => {
     });
 });
 
+//to display workouts
 app.get("/api/workouts", async (req, res) => {
     try {
         const workouts = await prisma.workout.findMany({
@@ -29,6 +30,7 @@ app.get("/api/workouts", async (req, res) => {
     }
 });
 
+//to add a workout
 app.post("/api/workouts", async (req, res) => {
     try {
         const {name, date} = req.body;
@@ -48,6 +50,7 @@ app.post("/api/workouts", async (req, res) => {
     }
 });
 
+//to update the workout info
 app.put("/api/workouts/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
@@ -72,6 +75,7 @@ app.put("/api/workouts/:id", async (req, res) => {
     }
 });
 
+//to delete a workout
 app.delete("/api/workouts/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
@@ -93,6 +97,7 @@ app.delete("/api/workouts/:id", async (req, res) => {
     }
 });
 
+//to add an exercsie to a selected workout
 app.post("/api/workouts/:workoutId/exercises", async(req, res) => {
     try {
         const workoutId = Number(req.params.workoutId);
@@ -116,6 +121,7 @@ app.post("/api/workouts/:workoutId/exercises", async(req, res) => {
     
 });
 
+//to display the exercsies in a selected workout
 app.get("/api/workouts/:workoutId/exercises", async (req, res) => {
     try {
         const workoutId = Number(req.params.workoutId);
@@ -136,6 +142,7 @@ app.get("/api/workouts/:workoutId/exercises", async (req, res) => {
     }
 });
 
+//to add sets in a exercsie for a selected workout
 app.post("/api/exercises/:exerciseId/sets", async (req,res) => {
     try {
         const exerciseId = Number(req.params.exerciseId);
@@ -160,6 +167,7 @@ app.post("/api/exercises/:exerciseId/sets", async (req,res) => {
     }
 });
 
+//to display sets in a exercsie for a selected workout
 app.get("/api/exercises/:exerciseId/sets", async (req,res) => {
     try {
         const exerciseId = Number(req.params.exerciseId);
@@ -179,6 +187,58 @@ app.get("/api/exercises/:exerciseId/sets", async (req,res) => {
         });
     }
 })
+
+//to delete a particular set in a exercise
+app.delete("api/sets/:id", async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        await prisma.set.delete({
+            where: {
+                id: id,
+            },
+        });
+
+        res.json({
+            message: "Set deleted sucessfully"
+        });
+        
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to delete set",
+        });
+    }
+    
+});
+
+//to update a set in a exercise
+app.put("/api/sets/:id", async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        const {weight, reps} = req.body;
+
+        const sets = await prisma.set.update({
+            where: {
+                id: id
+            },
+            data: {
+                weight: weight,
+                reps: reps,
+            }
+        })
+        res.json(sets);
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to update set",
+        });
+    }
+});
 
 app.get("/api/test-db", async (req, res) => {
     try {

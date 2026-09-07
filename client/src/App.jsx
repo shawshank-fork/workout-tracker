@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
-import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet, getSets} from "./api/workoutApi";
+import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet, getSets, deleteSet} from "./api/workoutApi";
 
 function App() {
 
@@ -84,6 +84,14 @@ function App() {
       ...currentReps,
       [exerciseId]: ""
     }));
+  }
+
+  async function handleDeleteSet(id) {
+    await deleteSet(id);
+
+    setSets((currrentSets) => 
+      currrentSets.filter((set) => set.id !== id)
+    );
   }
 
 
@@ -177,10 +185,16 @@ function App() {
 
               {sets
                 .filter((set) => set.exerciseId === exercise.id)
-                .map((set) => (
-                  <p key={set.id}>
-                    {set.weight} kg x {set.reps} reps
-                  </p>
+                .map((set, index) => (
+                  <div key={set.id}>
+                    <p>
+                      Set {index + 1}: {set.weight} kg x {set.reps} reps
+                    </p>
+
+                    <button onClick={() => handleDeleteSet(set.id)}>
+                      Delete
+                    </button>
+                  </div>
                 ))
               }
             </div>

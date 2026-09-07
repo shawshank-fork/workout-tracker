@@ -101,3 +101,14 @@ export async function getSets(exerciseId) {
 
     return response.json();
 }
+
+export async function deleteSet(id) {
+    const response = await fetch(`http://localhost:5000/api/sets/${id}`, {
+        method: "DELETE",
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to delte sets");
+    }
+    return response.json();
+}
