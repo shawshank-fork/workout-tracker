@@ -148,6 +148,18 @@ app.post("/api/exercises/:exerciseId/sets", async (req,res) => {
         const exerciseId = Number(req.params.exerciseId);
         const { weight, reps} = req.body;
 
+        if(weight === undefined || reps === undefined) {
+            return res.status(400).json({
+                message: "Weight and reps are required",
+            });
+        }
+
+        if(Number(weight) <= 0 || Number(reps) <= 0){
+            return res.status(400).json({
+                message: "Weight and reps must be greater than 0",
+            });
+        }
+
         const set = await prisma.set.create({
             data: {
                 weight: weight,
@@ -200,7 +212,7 @@ app.delete("/api/sets/:id", async (req, res) => {
         });
 
         res.json({
-            message: "Set deleted sucessfully"
+            message: "Set deleted sucessfully",
         });
         
     } catch (error) {
@@ -219,6 +231,18 @@ app.put("/api/sets/:id", async (req, res) => {
         const id = Number(req.params.id);
 
         const {weight, reps} = req.body;
+
+        if(weight === undefined || reps === undefined) {
+            return res.status(400).json({
+                message: "Weight and reps are required",
+            });
+        }
+
+        if(Number(weight) <= 0 || Number(reps) <= 0) {
+            return res.status(400).json({
+                message: "Weight and reos must be greater than 0",
+            })
+        }
 
         const updatedSet = await prisma.set.update({
             where: {
