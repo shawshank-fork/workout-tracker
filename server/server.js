@@ -189,7 +189,7 @@ app.get("/api/exercises/:exerciseId/sets", async (req,res) => {
 })
 
 //to delete a particular set in a exercise
-app.delete("api/sets/:id", async (req, res) => {
+app.delete("/api/sets/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
 
@@ -220,16 +220,16 @@ app.put("/api/sets/:id", async (req, res) => {
 
         const {weight, reps} = req.body;
 
-        const sets = await prisma.set.update({
+        const updatedSet = await prisma.set.update({
             where: {
                 id: id
             },
             data: {
-                weight: weight,
-                reps: reps,
+                weight: Number(weight),
+                reps: Number(reps),
             }
         })
-        res.json(sets);
+        res.json(updatedSet);
 
     } catch (error) {
         console.error(error);

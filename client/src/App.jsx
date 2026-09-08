@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkoutCard from "./components/workoutCard";
-import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet, getSets, deleteSet} from "./api/workoutApi";
+import { getWorkouts, createWorkout, deleteWorkout, getExercises, createExercise, createSet, getSets, deleteSet, updateSet} from "./api/workoutApi";
 
 function App() {
 
@@ -13,6 +13,7 @@ function App() {
   const [weights, setWeights] = useState({}); //{} means we will be storing object now. Earlier: ""
   const [reps, setReps] = useState({});
   const [sets, setSets] = useState([]);
+  const [editingSetId, setEditingSetId] = useState(null); //to store the id of the set being edited
 
   useEffect(() => {
     getWorkouts()
@@ -92,6 +93,21 @@ function App() {
     setSets((currrentSets) => 
       currrentSets.filter((set) => set.id !== id)
     );
+  }
+
+  async function handleUpdateSet(id, weight, reps) {
+    const updatedSet = await updateSet(id, {
+      weight: Number(weight),
+      reps: Number(reps)
+    });
+
+    setSets((currrentSets) => 
+      currrentSets.map((set) => 
+        set.id === id ? updatedSet : set
+      )
+    );
+
+    setEditingSetId(null);
   }
 
 
@@ -187,14 +203,65 @@ function App() {
                 .filter((set) => set.exerciseId === exercise.id)
                 .map((set, index) => (
                   <div key={set.id}>
-                    <p>
-                      Set {index + 1}: {set.weight} kg x {set.reps} reps
-                    </p>
+
+                    {editingSetId === set.id ? (
+                      <div>
+                        <input
+                          type="number"
+                          value={set.weight}
+                          onChange={(e) => {
+                            setSets((currentSets) =>
+                              currentSets.map((currentSet) =>
+                                currentSet.id === set.id
+                                  ? {
+                                      ...currentSet,
+                                      weight: e.target.value,
+
+                                    }
+                                  : currentSet  
+                              )
+                            );
+                          }}
+                        />
+
+                        <input
+                          type="number"
+                          value={set.reps}
+                          onChange={(e) => {
+                            setSets((currentSets) =>
+                              currentSets.map((currentSet) =>
+                                currentSet.id === set.id
+                                  ? {
+                                      ...currentSet,
+                                      reps: e.target.value,
+                                    }
+                                  : currentSet  
+                              )
+                            );
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <p>
+                        Set {index + 1}: {set.weight} kg x {set.reps} reps
+                      </p>
+                    )}
+
+                    {editingSetId === set.id ? (
+                      <button onClick={() => handleUpdateSet(set.id, set.weight, set.reps)}>
+                        Save
+                      </button>
+                    ):(
+                      <button onClick={() => setEditingSetId(set.id)}>
+                        Edit
+                      </button>
+                    )}
 
                     <button onClick={() => handleDeleteSet(set.id)}>
                       Delete
                     </button>
-                  </div>
+
+                  </div>  
                 ))
               }
             </div>

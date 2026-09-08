@@ -112,3 +112,19 @@ export async function deleteSet(id) {
     }
     return response.json();
 }
+
+export async function updateSet(id, set) {
+    const response = await fetch(`http://localhost:5000/api/sets/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(set),
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to update set");
+    }
+
+    return response.json()
+}
