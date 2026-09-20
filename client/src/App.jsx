@@ -14,6 +14,9 @@ function App() {
   const [reps, setReps] = useState({});
   const [sets, setSets] = useState([]);
   const [editingSetId, setEditingSetId] = useState(null); //to store the id of the set being edited
+  const [setError, setSetError] = useState("");
+  const [workoutError, setWorkoutError] = useState("");
+  const [exerciseError, setExerciseError] = useState("");
 
   useEffect(() => {
     getWorkouts()
@@ -43,9 +46,12 @@ function App() {
   }
 
   async function handleAddExercise() {
-    if(!exerciseName.trim() || !selectedWorkout) {
+    if(!exerciseName.trim()) {
+      setExerciseError("Exercise name is required");
       return;
     }
+
+    setExerciseError("");
 
     const newExercise = {
       name: exerciseName,
@@ -64,6 +70,18 @@ function App() {
   }
 
   async function handleAddSet(exerciseId, weight, reps) {
+    if(!weight || !reps) {
+      setSetError("weight and reps are required");
+      return;
+    }
+
+    if(Number(weight) <= 0 || Number(reps) <= 0) {
+      setSetError("Weight and reps must be greater than 0");
+      return;
+    }
+
+    setSetError("");
+    
     const newSet = {
       weight: Number(weight),
       reps: Number(reps),
@@ -113,18 +131,25 @@ function App() {
 
   async function addWorkout() {
     
-    if (workoutName.trim() === ""){
+    if(!workoutName.trim()) {
+      setWorkoutError("Workout name is required");
       return;
     }
 
+    setWorkoutError("");
+
     const newWorkout = {
       name: workoutName,
-      date: "2026-08-27"
+      date: "2026-08-27",
     };
 
     const createdWorkout = await createWorkout(newWorkout);
 
-    setWorkouts([...workouts, createdWorkout]);
+    setWorkouts((currentWorkouts) => [
+      ...currentWorkouts,
+      createdWorkout
+    ]);
+
     setWorkoutName("");
   }
 
@@ -140,6 +165,8 @@ function App() {
         onChange={(event) => setWorkoutName(event.target.value)}
       />
 
+      {workoutError && <p>{workoutError}</p>}
+
       {workouts.map((workout) => (
         <WorkoutCard
           key={workout.id}
@@ -150,6 +177,7 @@ function App() {
           onSelect={handleSelectWorkout}
         />
       ))}
+      
 
       {selectedWorkout && (
         <div>
@@ -161,6 +189,8 @@ function App() {
             value={exerciseName}
             onChange={(event) => setExerciseName(event.target.value)}
           />
+
+          {exerciseError && <p>{exerciseError}</p>}
 
           <button onClick={handleAddExercise}>
             Add Exercise
@@ -198,6 +228,8 @@ function App() {
               <button onClick={() => handleAddSet(exercise.id, weights[exercise.id], reps[exercise.id])}>
                 Add Set
               </button>
+
+              {setError && <p>{setError}</p>}
 
               {sets
                 .filter((set) => set.exerciseId === exercise.id)
