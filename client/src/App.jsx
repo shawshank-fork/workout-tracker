@@ -14,7 +14,7 @@ function App() {
   const [reps, setReps] = useState({});
   const [sets, setSets] = useState([]);
   const [editingSetId, setEditingSetId] = useState(null); //to store the id of the set being edited
-  const [setError, setSetError] = useState("");
+  const [setError, setSetError] = useState({});
   const [workoutError, setWorkoutError] = useState("");
   const [exerciseError, setExerciseError] = useState("");
 
@@ -62,8 +62,8 @@ function App() {
       newExercise
     );
 
-    setExercises((currrentExercises) => [
-      ...currrentExercises,
+    setExercises((currentExercises) => [
+      ...currentExercises,
       createdExercise
     ]);
     setExerciseName("");
@@ -71,16 +71,25 @@ function App() {
 
   async function handleAddSet(exerciseId, weight, reps) {
     if(!weight || !reps) {
-      setSetError("weight and reps are required");
+      setSetError((currentError) => ({
+        ...currentError,
+        [exerciseId]: "weight and reps are required",
+      }));
       return;
     }
 
     if(Number(weight) <= 0 || Number(reps) <= 0) {
-      setSetError("Weight and reps must be greater than 0");
+      setSetError((currentError) => ({
+        ...currentError,
+        [exerciseId]: "weight and reps must be greater than 0 ",
+      }));
       return;
     }
 
-    setSetError("");
+    setSetError((currentError) => ({
+      ...currentError,
+      [exerciseId]: "",
+    }));
     
     const newSet = {
       weight: Number(weight),
@@ -89,8 +98,8 @@ function App() {
 
     const createdSet = await createSet(exerciseId, newSet);
 
-    setSets((currrentSets) => [
-      ...currrentSets,
+    setSets((currentSets) => [
+      ...currentSets,
       createdSet
     ]);
 
@@ -108,8 +117,8 @@ function App() {
   async function handleDeleteSet(id) {
     await deleteSet(id);
 
-    setSets((currrentSets) => 
-      currrentSets.filter((set) => set.id !== id)
+    setSets((currentSets) => 
+      currentSets.filter((set) => set.id !== id)
     );
   }
 
@@ -119,8 +128,8 @@ function App() {
       reps: Number(reps)
     });
 
-    setSets((currrentSets) => 
-      currrentSets.map((set) => 
+    setSets((currentSets) => 
+      currentSets.map((set) => 
         set.id === id ? updatedSet : set
       )
     );
@@ -140,7 +149,7 @@ function App() {
 
     const newWorkout = {
       name: workoutName,
-      date: "2026-08-27",
+      date: new Date().toISOString().split("T")[0],
     };
 
     const createdWorkout = await createWorkout(newWorkout);
@@ -205,12 +214,11 @@ function App() {
                 placeholder="weight"
                 value={weights[exercise.id] || ""}
                 onChange={(e) => 
-                  setWeights({
-                    ...weights,
+                  setWeights((currentWeights)=>({
+                    ...currentWeights,
                     [exercise.id]: e.target.value
-                  })
+                  }))
                 }
-
               />
 
               <input
@@ -229,7 +237,7 @@ function App() {
                 Add Set
               </button>
 
-              {setError && <p>{setError}</p>}
+              {setError[exercise.id] && <p>{setError[exercise.id]}</p>}
 
               {sets
                 .filter((set) => set.exerciseId === exercise.id)
