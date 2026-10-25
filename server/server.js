@@ -142,6 +142,35 @@ app.get("/api/workouts/:workoutId/exercises", async (req, res) => {
     }
 });
 
+//to delete an exercise
+app.delete("/api/exercises/:id", async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        // Delete sets associated with this exercise first to maintain FK integrity
+        await prisma.set.deleteMany({
+            where: {
+                exerciseId: id,
+            },
+        });
+
+        await prisma.exercise.delete({
+            where: {
+                id: id,
+            },
+        });
+
+        res.json({
+            message: "Exercise deleted successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Failed to delete exercise",
+        });
+    }
+});
+
 //to add sets in a exercsie for a selected workout
 app.post("/api/exercises/:exerciseId/sets", async (req,res) => {
     try {

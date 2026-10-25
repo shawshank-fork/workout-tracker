@@ -76,6 +76,18 @@ export async function createExercise(workoutId, exercise) {
     return response.json();
 }
 
+export async function deleteExercise(id) {
+    const response = await fetch(`http://localhost:5000/api/exercises/${id}`, {
+        method: "DELETE",
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to delete exercise");
+    }
+
+    return response.json();
+}
+
 export async function createSet(exerciseId, set) {
     const response = await fetch(`http://localhost:5000/api/exercises/${exerciseId}/sets`, {
         method: "POST",
